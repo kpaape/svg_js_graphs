@@ -1,3 +1,5 @@
+var graphColors = ["red", "blue", "green", "orange", "purple"];
+
 var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -11,7 +13,7 @@ xmlhttp.open("GET", "data.json", true);
 xmlhttp.send();
 
 function drawLine(x1, y1, x2, y2, color="black", width=1) {
-    var newLine = '<line x1="' + x1 + '%" y1="' + y1 + '%" x2="' + x2 + '%" y2="' + y2 + '%" class="graph-stroke-' + color + ' graph-stroke-width_' + width + '"/>';
+    var newLine = '<line x1="' + x1 + '%" y1="' + y1 + '%" x2="' + x2 + '%" y2="' + y2 + '%" style="stroke:'+color+';stroke-width:'+width+'"/>';
     return newLine;
 }
 
@@ -38,15 +40,13 @@ function procGraphData(myData) {
     switch(myData["graph-type"]) {
         case "line-graph":
             // draw graph
-            // graphHTML += '<polyline points="20,20 40,25 60,40 80,120 120,140 200,180" class="black width_2 no-fill"/>';
             
             // draw x & y baselines
             graphHTML += drawLine(0, 0, 0, 100);
             graphHTML += drawLine(0, 100, 100, 100);
             
             // draw x & y labels
-
-            // these should have there own section outside of the graph
+            // these should have their own section outside of the graph
             graphHTML += '<text x="1%" y="5%" class="graph-stroke-black graph-text">' + myData["y-label"] + '</text>';
             graphHTML += '<text x="95%" y="95%" class="graph-stroke-black graph-text">' + myData["x-label"] + '</text>';
 
@@ -54,7 +54,7 @@ function procGraphData(myData) {
             var yRange = myData["y-range"][1] - myData["y-range"][0];
             var yStep = 100 / yRange;
             // draw y markers
-            // these need to be in the same section with the label
+            // these need to be in the same section with the labels
             for(var i = 1; i < yRange; i++) {
                 if(i % myData["y-range"][2] == 0) {
                     var newY = 100-(yStep*i);
@@ -78,24 +78,23 @@ function procGraphData(myData) {
             // graphHTML += drawPolyLine(myData);
             var lastX = 0;
             var lastY = 0;
-            for(var i = 0; i < myData["graph-data"].length; i++) {
-                var yLoc = Number(myData["graph-data"][i][1]) - myData["y-range"][0];
-                console.log(yLoc);
-                var xLoc = Number(myData["graph-data"][i][0]) - myData["x-range"][0];
-                console.log(xLoc);
-                newX = xStep*xLoc;
-                newY = 100-(yStep*yLoc);
-                if(i==0) {
-                    lastX = newX;
-                    lastY = newY;
-                    // ctx.moveTo(graphMargins+(xStep*xLoc), graph.height-graphMargins-(yStep*yLoc));
-                } else {
-                    
-                    graphHTML += drawLine(lastX, lastY, newX, newY, "red", 2);
-                    lastX = newX;
-                    lastY = newY;
-                    // ctx.lineTo(graphMargins+(xStep*xLoc), graph.height-graphMargins-(yStep*yLoc));
-                    // ctx.stroke();
+            for(var i = 0; i < myData["graph-data"].length; i++){
+                var graphData = myData["graph-data"][i];
+                for(var j = 0; j < graphData.length; j++) {
+                    var yLoc = Number(graphData[j][1]) - myData["y-range"][0];
+                    console.log(yLoc);
+                    var xLoc = Number(graphData[j][0]) - myData["x-range"][0];
+                    console.log(xLoc);
+                    newX = xStep*xLoc;
+                    newY = 100-(yStep*yLoc);
+                    if(j==0) {
+                        lastX = newX;
+                        lastY = newY;
+                    } else {
+                        graphHTML += drawLine(lastX, lastY, newX, newY, graphColors[i%graphColors.length], 2);
+                        lastX = newX;
+                        lastY = newY;
+                    }
                 }
             }
             

@@ -23,25 +23,6 @@ body {
     stroke-width: 0;
 }
 
-.graph-stroke-black {
-    stroke: black;
-}
-
-.graph-stroke-red {
-    stroke: red;
-}
-
-.graph-stroke-width_2 {
-    stroke-width: 2;
-}
-
-.graph-stroke-width_3 {
-    stroke-width: 3;
-}
-
-.graph-stroke-width_4 {
-    stroke-width: 4;
-}
 
 .graph-no-fill {
     fill: none;
