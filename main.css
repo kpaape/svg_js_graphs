@@ -1,3 +1,11 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --margins: 40px;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -8,13 +16,33 @@ body {
     margin: 0 auto;
 }
 
-.graph-line, .graph-bar {
-    /* border: 1px solid black; */
+.graph-container {
+    position: relative;
+    display: inline-block;
     width: 100%;
-    height: 100%;
+    height: 300px;
     min-height: 200px;
+}
+
+.graph {
+    /* border: 1px solid black; */
+    display: inline-block;
+    width: calc(100% - var(--margins));
+    height: calc(100% - var(--margins));
     border-left: 1px solid black;
     border-bottom: 1px solid black;
+}
+
+.graph-y_labels {
+    display: inline-block;
+    width: var(--margins);
+    height: calc(100% - var(--margins));
+}
+
+.graph-x_labels {
+    display: inline-block;
+    width: 100%;
+    height: var(--margins);
 }
 
 .graph-text {

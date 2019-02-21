@@ -12,9 +12,8 @@ xmlhttp.onreadystatechange = function() {
 xmlhttp.open("GET", "data.json", true);
 xmlhttp.send();
 
-function drawLine(x1, y1, x2, y2, color="black", width=1, graphType="") {
+function drawLine(x1, y1, x2, y2, color="black", width=2, graphType="") {
     var unit = (graphType == "bar-graph") ? "%" : "";
-    console.log(unit);
     var newLine = '<line x1="' + x1 + '%" y1="' + y1 + '%" x2="' + x2 + '%" y2="' + y2 + '%" style="stroke:'+color+';stroke-width:'+width+unit+'"/>';
     return newLine;
 }
@@ -36,12 +35,12 @@ function drawPolyLine(myData, color="red", width=2) {
 
 function procGraphData(myData) {
     var graph = document.getElementById(myData["graph-id"]);
-    var graphHTML = "";
+    var htmlLabelData = graph.innerHTML.trim();
+    var graphHTML = "<svg class='graph-y_labels'></svg><svg class='graph'>";
 
     if(myData["graph-type"] == "line-graph" || myData["graph-type"] == "bar-graph") {
         // draw graph
         // get x marker data
-        console.log("gotcha x2")
         var xRange = myData["x-range"][1] - myData["x-range"][0];
         var xStep = 100 / xRange;
         // get y marker data
@@ -64,7 +63,7 @@ function procGraphData(myData) {
                         lastX = newX;
                         lastY = newY;
                     } else {
-                        graphHTML += drawLine(lastX, lastY, newX, newY, graphColors[i%graphColors.length], 2);
+                        graphHTML += drawLine(lastX, lastY, newX, newY, graphColors[i%graphColors.length]);
                         lastX = newX;
                         lastY = newY;
                     }
@@ -86,19 +85,37 @@ function procGraphData(myData) {
         }
     }
 
-    graphHTML += drawGraphLabels(myData, graphHTML, xRange, xStep, yRange, yStep);
-    graph.innerHTML += graphHTML;
+    graphHTML = drawGraphMarkers(myData, graphHTML, xRange, xStep, yRange, yStep);
+    graphHTML += "</svg><svg class='graph-x_labels'></svg>";
+    graph.innerHTML = graphHTML;
+    drawGraphLabels(myData, htmlLabelData);
 }
 
-function drawGraphLabels(myData, graphHTML, xRange, xStep, yRange, yStep) {
-    // draw x & y baselines
-    graphHTML += drawLine(0, 0, 0, 100);
-    graphHTML += drawLine(0, 100, 100, 100);
+function drawGraphLabels(myData, htmlLabelData) {
     
     // draw x & y labels
     // these should have their own section outside of the graph
-    graphHTML += '<text x="1%" y="5%" class="graph-stroke-black graph-text">' + myData["y-label"] + '</text>';
-    graphHTML += '<text x="95%" y="95%" class="graph-stroke-black graph-text">' + myData["x-label"] + '</text>';
+    
+    var xLabel = myData["x-label"];
+    var yLabel = myData["y-label"];
+
+    var currentGraph = document.getElementById(myData["graph-id"]);
+    if(htmlLabelData) {
+        htmlLabelData = JSON.parse(htmlLabelData);
+        xLabel = htmlLabelData.xLabel;
+        yLabel = htmlLabelData.yLabel;
+    }
+
+    var xLabelEle = currentGraph.getElementsByClassName("graph-x_labels")[0];
+    var yLabelEle = currentGraph.getElementsByClassName("graph-y_labels")[0];
+    xLabelEle.innerHTML = '<text x="50%" y="80%" class="graph-text">' + xLabel + '</text>';
+    yLabelEle.innerHTML = '<text x="0" y="50%" class="graph-text">' + yLabel + '</text>';
+}
+
+function drawGraphMarkers(myData, graphHTML, xRange, xStep, yRange, yStep) {
+    // draw x & y baselines
+    graphHTML += drawLine(0, 0, 0, 100);
+    graphHTML += drawLine(0, 100, 100, 100);
 
     // draw x markers
     // these need to be in the same section with the label
