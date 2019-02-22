@@ -36,7 +36,9 @@ function drawPolyLine(myData, color="red", width=2) {
 function procGraphData(myData) {
     var graph = document.getElementById(myData["graph-id"]);
     var htmlLabelData = graph.innerHTML.trim();
-    var graphHTML = "<svg class='graph-y_labels'></svg><svg class='graph'>";
+    graph.innerHTML = `<svg id="${myData["graph-id"]}" class="graph-y_labels"></svg><svg id="${myData["graph-id"]}" class="graph"></svg><svg id="${myData["graph-id"]}" class="graph-x_labels"></svg>`;
+
+    var graphHTML = "";
 
     if(myData["graph-type"] == "line-graph" || myData["graph-type"] == "bar-graph") {
         // draw graph
@@ -85,9 +87,9 @@ function procGraphData(myData) {
         }
     }
 
-    graphHTML = drawGraphMarkers(myData, graphHTML, xRange, xStep, yRange, yStep);
-    graphHTML += "</svg><svg class='graph-x_labels'></svg>";
-    graph.innerHTML = graphHTML;
+    graphHTML += drawGraphMarkers(myData, xRange, xStep, yRange, yStep);
+    document.getElementById(myData["graph-id"]).getElementsByClassName("graph")[0].innerHTML = graphHTML;
+    
     drawGraphLabels(myData, htmlLabelData);
 }
 
@@ -112,7 +114,8 @@ function drawGraphLabels(myData, htmlLabelData) {
     yLabelEle.innerHTML = '<text x="0" y="50%" class="graph-text">' + yLabel + '</text>';
 }
 
-function drawGraphMarkers(myData, graphHTML, xRange, xStep, yRange, yStep) {
+function drawGraphMarkers(myData, xRange, xStep, yRange, yStep) {
+    var graphHTML = "";
     // draw x & y baselines
     graphHTML += drawLine(0, 0, 0, 100);
     graphHTML += drawLine(0, 100, 100, 100);

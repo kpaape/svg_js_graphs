@@ -41,8 +41,9 @@ body {
 
 .graph-x_labels {
     display: inline-block;
-    width: 100%;
+    width: calc(100% - var(--margins));
     height: var(--margins);
+    margin-left: var(--margins);
 }
 
 .graph-text {
