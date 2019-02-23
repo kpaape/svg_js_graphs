@@ -18,6 +18,11 @@ function drawLine(x1, y1, x2, y2, color="black", width=2, graphType="") {
     return newLine;
 }
 
+function drawText(xLoc, yLoc, addText) {
+    var newText = `<text x="${xLoc}%" y="${yLoc}%" class="graph-text">${addText}</text>`;
+    return newText;
+}
+
 function drawPolyLine(myData, color="red", width=2) {
     // sadly, drawing the data with a poly line will not work since you cannot place poly points at percentages
     var points = "";
@@ -49,6 +54,7 @@ function procGraphData(myData) {
         var yRange = myData["y-range"][1] - myData["y-range"][0];
         var yStep = 100 / yRange;
 
+        graphHTML += drawGraphMarkers(myData, xRange, xStep, yRange, yStep);
         // draw data line
         // graphHTML += drawPolyLine(myData);
         var lastX = 0;
@@ -87,8 +93,7 @@ function procGraphData(myData) {
         }
     }
 
-    graphHTML += drawGraphMarkers(myData, xRange, xStep, yRange, yStep);
-    document.getElementById(myData["graph-id"]).getElementsByClassName("graph")[0].innerHTML = graphHTML;
+    graph.getElementsByClassName("graph")[0].innerHTML = graphHTML;
     
     drawGraphLabels(myData, htmlLabelData);
 }
@@ -110,12 +115,17 @@ function drawGraphLabels(myData, htmlLabelData) {
 
     var xLabelEle = currentGraph.getElementsByClassName("graph-x_labels")[0];
     var yLabelEle = currentGraph.getElementsByClassName("graph-y_labels")[0];
-    xLabelEle.innerHTML = '<text x="50%" y="80%" class="graph-text">' + xLabel + '</text>';
-    yLabelEle.innerHTML = '<text x="0" y="50%" class="graph-text">' + yLabel + '</text>';
+    // xLabelEle.innerHTML += '<text x="50%" y="80%" class="graph-text">' + xLabel + '</text>';
+    // yLabelEle.innerHTML += '<text x="0" y="50%" class="graph-text">' + yLabel + '</text>';
+    xLabelEle.innerHTML += drawText(50, 80, xLabel);
+    yLabelEle.innerHTML += drawText(0, 4, yLabel);
 }
 
 function drawGraphMarkers(myData, xRange, xStep, yRange, yStep) {
     var graphHTML = "";
+    var xMarkers = "";
+    var yMarkers = "";
+    var currentGraph = document.getElementById(myData["graph-id"]);
     // draw x & y baselines
     graphHTML += drawLine(0, 0, 0, 100);
     graphHTML += drawLine(0, 100, 100, 100);
@@ -126,16 +136,21 @@ function drawGraphMarkers(myData, xRange, xStep, yRange, yStep) {
         if(i % myData["x-range"][2] == 0) {
             var newX = xStep*i;
             graphHTML += drawLine(newX, 100, newX, 95);
+            xMarkers += drawText(newX, 20, myData["graph-data"][0][i-1][0]);
         }
     }
+    currentGraph.getElementsByClassName("graph-x_labels")[0].innerHTML += xMarkers;
 
     // draw y markers
     // these need to be in the same section with the labels
     for(var i = 1; i < yRange; i++) {
         if(i % myData["y-range"][2] == 0) {
             var newY = 100-(yStep*i);
-            graphHTML += drawLine(0, newY, 5, newY);
+            graphHTML += drawLine(0, newY, 100, newY, "gray", 1);
+            yMarkers += drawText(0, newY, Number(myData["y-range"][0]) + i);
         }
     }
+    currentGraph.getElementsByClassName("graph-y_labels")[0].innerHTML += yMarkers;
+
     return graphHTML;
 }
