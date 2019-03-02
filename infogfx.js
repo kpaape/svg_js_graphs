@@ -135,8 +135,12 @@ function drawGraphMarkers(myData, xRange, xStep, yRange, yStep) {
     for(var i = 1; i < xRange; i++) {
         if(i % myData["x-range"][2] == 0) {
             var newX = xStep*i;
+            var newMarker = myData["graph-data"][0][i-1][0];
+            if(myData["graph-data"][0][i-1][2]) {
+                newMarker = myData["graph-data"][0][i-1][2];
+            }
             graphHTML += drawLine(newX, 100, newX, 95);
-            xMarkers += drawText(newX, 20, myData["graph-data"][0][i-1][0]);
+            xMarkers += drawText(newX, 20, newMarker);
         }
     }
     currentGraph.getElementsByClassName("graph-x_labels")[0].innerHTML += xMarkers;
